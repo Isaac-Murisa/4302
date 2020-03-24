@@ -385,3 +385,5 @@ function rightAnglePrism() {
   colors = s5colors;
   points = s5points;
 };
+
+//https://github.com/Carla-de-Beer/WebGL-projects/blob/master/Perspective%20Ortho%20Oblique/scripts/main.js
