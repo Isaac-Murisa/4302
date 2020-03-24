@@ -6,24 +6,21 @@
  * 
  */
 
- /**
-  * We have not managed to print 5 objectes in the same canvas, hence we created a cube and a tetrahedron as well.
-  * we did not manage to have have th eorhtogonal view wotking proparly, the code is included but it has some bugs.
-  * There are errors when running the program therefore we suggest reloading the assignment page everytime you wish to switch 
-  *   to a new transformation (rotation, translation etc) or view (perspective or orthogonal)
-  * We managed to have the projection respond to WASD key press once the "Perspective view is selected"
-  * We managed to implement all the required transformations: i.e. rotation, transformation, uniform scaling and non-uniform scaling in
-  *   all directions as well as moving shape back and forth. Though to successfult view this, the page has to be reloaded everytime to switch
-  *   to a different transformation or view.
-  * 
-  * All the code has been documented below, both what is running and what has bugs. 
-  */
 
-
-// variables for system.
+// variables for system
+// Shape arrays and vertices
 var gl;
 var points = [];
 var colors = [];
+var s2points = [];
+var s2colors = [];
+var s3points = [];
+var s3colors = [];
+var s4points = [];
+var s4colors = [];
+var s5points = [];
+var s5colors = [];
+
 
 var vModelViewMatrix, vProjectionMatrix;
 var modelViewMatrix, projectionMatrix;
@@ -60,7 +57,7 @@ const at = vec3(0.0, 0.0, 0.0);
 const up = vec3(0.0, 1.0, 0.0);
 
 // variables use by the tranfornations
-var model_trans = "orthogonal";
+var model_trans = "perspective";
 var num = 0.1;
 var y_point = 1;
 var x_point = 1;
@@ -77,7 +74,12 @@ window.onload = function init() {
   }
 
   // populate indices for cube
-  cubeIndices();
+  //cubeIndices();
+  //tetraIndices();
+  //cuboidIndices();
+  prismIndices();
+  //rightAnglePrism();
+
 
   //  Configure WebGL  
   gl.viewport( 0, 0, canvas.width, canvas.height );
@@ -159,160 +161,19 @@ function render() {
     requestAnimationFrame(render);
   }
 
-  // Different transformations
-  else if (model_trans == "rotation") {
-    mv = mult( mv, rotate(2.0,vec3(0,1,0)) );
-    gl.uniformMatrix4fv(vModelViewMatrix, false, flatten(mv));
-    gl.uniformMatrix4fv(vProjectionMatrix, false, flatten(p));
-    gl.drawArrays( gl.TRIANGLES, 0, points.length );
-    requestAnimationFrame(render);
-  }
-  // Uniform scale on all x-axis
-  // scale the shape on all axis
-  else if (model_trans == "uniformScale") {
-    mv = mult( mv, scale(1.5, 1.5, 1.5) );
-    gl.uniformMatrix4fv(vModelViewMatrix, false, flatten(mv));
-    gl.uniformMatrix4fv(vProjectionMatrix, false, flatten(p));
-    gl.drawArrays( gl.TRIANGLES, 0, points.length );
-  }
-  // Non-uniform scaling X-direction
-  // scale the shape by x axis
-  else if (model_trans == "uniformXScale") {
-    mv = mult( mv, scale(1.5, 1, 1) );
-    gl.uniformMatrix4fv(vModelViewMatrix, false, flatten(mv));
-    gl.uniformMatrix4fv(vProjectionMatrix, false, flatten(p));
-    gl.drawArrays( gl.TRIANGLES, 0, points.length );
-  }
-  // Non-uniform scaling Y-direction
-  // scale the shape by y axis
-  else if (model_trans == "uniformYScale") {
-    mv = mult( mv, scale(1, 1.5, 1) );
-    gl.uniformMatrix4fv(vModelViewMatrix, false, flatten(mv));
-    gl.uniformMatrix4fv(vProjectionMatrix, false, flatten(p));
-    gl.drawArrays( gl.TRIANGLES, 0, points.length );
-  }
-  // Non-uniform scaling z-direction
-  // scale the shape by y axis
-  else if (model_trans == "uniformZScale") {
-    mv = mult( mv, scale(1, 1, 1.5) );
-    gl.uniformMatrix4fv(vModelViewMatrix, false, flatten(mv));
-    gl.uniformMatrix4fv(vProjectionMatrix, false, flatten(p));
-    gl.drawArrays( gl.TRIANGLES, 0, points.length );
-  }
-  // transformation
-  else if (model_trans == "transform") {
-    num = num * -1;
-    mv = mult( mv, translate(0, num, 0) );
-    gl.uniformMatrix4fv(vModelViewMatrix, false, flatten(mv));
-    gl.uniformMatrix4fv(vProjectionMatrix, false, flatten(p));
-    gl.drawArrays( gl.TRIANGLES, 0, points.length );
-  }
-  // moving back and forth between two points
-  else if (model_trans == "backandforth") {
-    mv = mult( mv, translate(x_point, y_point, 0) );
-    gl.uniformMatrix4fv(vModelViewMatrix, false, flatten(mv));
-    gl.uniformMatrix4fv(vProjectionMatrix, false, flatten(p));
-    gl.drawArrays( gl.TRIANGLES, 0, points.length );
-    requestAnimationFrame(render);
-    // makes shape return to previous postion.
-    x_point = x_point * -1;
-    y_point = y_point * -1;
-  }
+  // Different transformations: Rotation
+  /** 
+  mv = mult( mv, rotate(2.0,vec3(0,1,0)) );
+  gl.uniformMatrix4fv(vModelViewMatrix, false, flatten(mv));
+  gl.uniformMatrix4fv(vProjectionMatrix, false, flatten(p));
+  gl.drawArrays( gl.TRIANGLES, 0, points.length );
+  requestAnimationFrame(render);*/
+  
 };
 
 
 /**
- * Cube function. Add cube vertices to points
- */
-function Cube(a, b, c, d) {
-  points.push(vertices[a]);
-  colors.push(faceColors[a])
-  points.push(vertices[b]);
-  colors.push(faceColors[a])
-  points.push(vertices[c]);
-  colors.push(faceColors[a])
-  points.push(vertices[a]);
-  colors.push(faceColors[a])
-  points.push(vertices[c]);
-  colors.push(faceColors[a])
-  points.push(vertices[d]);
-  colors.push(faceColors[a])
-};
-
-// cube vertices
-const vertices = [
-  vec4( -0.5, -0.5, 0.5, 1.0 ),
-  vec4( -0.5, 0.5, 0.5, 1.0 ),
-  vec4( 0.5, 0.5, 0.5, 1.0 ),
-  vec4( 0.5, -0.5, 0.5, 1.0 ),
-  vec4( -0.5, -0.5, -0.5, 1.0 ),
-  vec4( -0.5, 0.5, -0.5, 1.0 ),
-  vec4( 0.5, 0.5, -0.5, 1.0 ),
-  vec4( 0.5, -0.5, -0.5, 1.0 )
-];
-
-// cube colors
-const faceColors = [
-  vec4(0.0, 0.0, 0.0, 1.0),  // black
-  vec4(1.0, 0.0, 0.0, 1.0),  // red
-  vec4(1.0, 1.0, 0.0, 1.0),  // yellow
-  vec4(0.0, 1.0, 0.0, 1.0),  // green
-  vec4(0.0, 0.0, 1.0, 1.0),  // blue
-  vec4(1.0, 0.0, 1.0, 1.0),  // magenta
-  vec4(0.0, 1.0, 1.0, 1.0),  // cyan
-  vec4(1.0, 1.0, 1.0, 1.0)   // white
-];
-
-/**
- * cube indices
- */
-function cubeIndices(){
-  Cube(1,0,3,2);
-  Cube(2,3,7,6);
-  Cube(3,0,4,7);
-  Cube(6,5,1,2);
-  Cube(4,5,6,7);
-  Cube(5,4,0,1);
-};
-
-
-/**
- * Tetrahedrone function
- */
-function Tetrahedrone(a, b, c) {
-  s2points.push(tetraVertices[a]);
-  s2colors.push(tetraFaceColors[a]);
-  s2points.push(tetraVertices[b]);
-  s2colors.push(tetraFaceColors[a]);
-  s2points.push(tetraVertices[c]);
-  s2colors.push(tetraFaceColors[a]);
-};
-
-//tetrahedron vertices
-const tetraVertices = [
-  vec4(0, 0.5, 0, 1.0),
-  vec4(-0.5, -0.5, 0.5, 1.0),
-  vec4(0.5, -0.5, 0.5, 1.0),
-  vec4(0, -0.5, -0.5, 1.0)
-];
-
-// tetrahedron face colors
-const tetraFaceColors = [
-  vec4(0.0, 0.0, 0.0, 1.0),  // black
-  vec4(1.0, 0.0, 0.0, 1.0),  // red
-  vec4(1.0, 1.0, 0.0, 1.0),  // yellow
-  vec4(0.0, 1.0, 0.0, 1.0),  // green
-];
-
-function tetraIndices() {
-  Tetrahedrone(0, 1, 2);
-  Tetrahedrone(1, 3, 0);
-  Tetrahedrone(2, 3, 0);
-  Tetrahedrone(3, 2, 1);
-};
-
-/**
- * Event handlers for key press
+ * Event handlers for key press and rotation
  */
 document.onkeypress = function(event) {
   if (event.code=='KeyW') {  //W key
@@ -329,12 +190,198 @@ document.onkeypress = function(event) {
   };
 };
 
+
+
+/********   Shapes  ******/
+
+
+
 /**
- * Event listener to change view when drop down is changed.
+ * Cube function
  */
-function changeView() {
-  var x = document.getElementById("view");
-  model_trans = x.value;
-  // render once the transformation has been selected.
-  render();
+function Cube(a, b, c, d) {
+  points.push(vertices[a]);
+  colors.push(faceColors[a]);
+  points.push(vertices[b]);
+  colors.push(faceColors[a]);
+  points.push(vertices[c]);
+  colors.push(faceColors[a]);
+  points.push(vertices[a]);
+  colors.push(faceColors[a]);
+  points.push(vertices[c]);
+  colors.push(faceColors[a]);
+  points.push(vertices[d]);
+  colors.push(faceColors[a]);
+};
+// cube vertices
+const vertices = [
+  vec4( -0.5, -0.5, 0.5, 1.0 ),
+  vec4( -0.5, 0.5, 0.5, 1.0 ),
+  vec4( 0.5, 0.5, 0.5, 1.0 ),
+  vec4( 0.5, -0.5, 0.5, 1.0 ),
+  vec4( -0.5, -0.5, -0.5, 1.0 ),
+  vec4( -0.5, 0.5, -0.5, 1.0 ),
+  vec4( 0.5, 0.5, -0.5, 1.0 ),
+  vec4( 0.5, -0.5, -0.5, 1.0 )
+];
+// cube colors
+const faceColors = [
+  vec4(0.0, 0.0, 0.0, 1.0),  // black
+  vec4(1.0, 0.0, 0.0, 1.0),  // red
+  vec4(1.0, 1.0, 0.0, 1.0),  // yellow
+  vec4(0.0, 1.0, 0.0, 1.0),  // green
+  vec4(0.0, 0.0, 1.0, 1.0),  // blue
+  vec4(1.0, 0.0, 1.0, 1.0),  // magenta
+  vec4(0.0, 1.0, 1.0, 1.0),  // cyan
+  vec4(1.0, 1.0, 1.0, 1.0)   // white
+];
+// cube indices
+function cubeIndices(){
+  Cube(1,0,3,2);
+  Cube(2,3,7,6);
+  Cube(3,0,4,7);
+  Cube(6,5,1,2);
+  Cube(4,5,6,7);
+  Cube(5,4,0,1);
+};
+
+
+/**
+ * Tetrahedrone 
+ */
+function Tetrahedrone(a, b, c) {
+  s2points.push(tetraVertices[a]);
+  s2colors.push(faceColors[a]);
+  s2points.push(tetraVertices[b]);
+  s2colors.push(faceColors[a]);
+  s2points.push(tetraVertices[c]);
+  s2colors.push(faceColors[a]);
+};
+// prism vertices
+const tetraVertices = [
+  vec4(0, 0.5, 0, 1.0),
+  vec4(-0.5, -0.5, 0.5, 1.0),
+  vec4(0.5, -0.5, 0.5, 1.0),
+  vec4(-0.5, -0.5, -0.5, 1.0),
+  vec4(0.5, -0.5, -0.5, 1.0)
+];
+// prism indices
+function tetraIndices() {
+  Tetrahedrone(0, 1, 2);
+  Tetrahedrone(1, 3, 0);
+  Tetrahedrone(2, 4, 0);
+  Tetrahedrone(3, 0, 4);
+  Tetrahedrone(4, 3, 1);
+  Tetrahedrone(4, 2, 1);
+  colors = s2colors;
+  points = s2points;
+};
+
+
+/**
+ * Cuboid
+ */
+function Cuboid(a, b, c, d) {
+  s3points.push(cuboidVertices[a]);
+  s3colors.push(faceColors[a]);
+  s3points.push(cuboidVertices[b]);
+  s3colors.push(faceColors[a]);
+  s3points.push(cuboidVertices[c]);
+  s3colors.push(faceColors[a]);
+  s3points.push(cuboidVertices[a]);
+  s3colors.push(faceColors[a]);
+  s3points.push(cuboidVertices[c]);
+  s3colors.push(faceColors[a]);
+  s3points.push(cuboidVertices[d]);
+  s3colors.push(faceColors[a]);
+};
+// cuboid vertices
+const cuboidVertices = [
+  vec4( -0.5, -0.25, 0.5, 1.0 ),
+  vec4( -0.5, 0.25, 0.5, 1.0 ),
+  vec4( 0.5, 0.25, 0.5, 1.0 ),
+  vec4( 0.5, -0.25, 0.5, 1.0 ),
+  vec4( -0.5, -0.25, -0.5, 1.0 ),
+  vec4( -0.5, 0.25, -0.5, 1.0 ),
+  vec4( 0.5, 0.25, -0.5, 1.0 ),
+  vec4( 0.5, -0.25, -0.5, 1.0 )
+];
+// cuboid indices
+function cuboidIndices(){
+  Cuboid(1,0,3,2);
+  Cuboid(2,3,7,6);
+  Cuboid(3,0,4,7);
+  Cuboid(6,5,1,2);
+  Cuboid(4,5,6,7);
+  Cuboid(5,4,0,1);
+  colors = s3colors;
+  points = s3points;
+};
+
+/**
+ * Prism as shape 4
+ */
+function Prism(a, b, c){
+  s4points.push(prismVertices[a]);
+  s4colors.push(faceColors[a]);
+  s4points.push(prismVertices[b]);
+  s4colors.push(faceColors[a]);
+  s4points.push(prismVertices[c]);
+  s4colors.push(faceColors[a]);
+};
+// Prism vertices
+const prismVertices = [
+  vec4( 0, 0.5, 0.5, 1.0 ),
+  vec4( -0.5, -0.5, 0.5, 1.0 ),
+  vec4( 0.5, -0.5, 0.5, 1.0 ),
+  vec4( 0, 0.5, -0.5, 1.0 ),
+  vec4( -0.5, -0.5, -0.5, 1.0 ),
+  vec4( 0.5, -0.5, -0.5, 1.0 )
+];
+// prism indices
+function prismIndices(){
+  Prism(0, 1, 2);
+  Prism(1, 4, 3);
+  Prism(1, 3, 0);
+  Prism(2, 0, 3);
+  Prism(2, 5, 3);
+  Prism(3, 4, 5);
+  Prism(4, 5, 2);
+  Prism(4, 1, 2);
+  colors = s4colors;
+  points = s4points;
+};
+
+/**
+ * Right angle prism
+ */
+function RightTriangle(a, b, c){
+  s5points.push(rightPrismVertices[a]);
+  s5colors.push(faceColors[a]);
+  s5points.push(rightPrismVertices[b]);
+  s5colors.push(faceColors[a]);
+  s5points.push(rightPrismVertices[c]);
+  s5colors.push(faceColors[a]);
+};
+// Right angle prism
+const rightPrismVertices =  [
+  vec4( -0.5, -0.5, 0.5, 1.0 ),
+  vec4( 0.5, -0.5, 0.5, 1.0 ),
+  vec4( 0.5, 0.5, 0.5, 1.0 ),
+  vec4( -0.5, -0.5, -0.5, 1.0 ),
+  vec4( 0.5, -0.5, -0.5, 1.0 ),
+  vec4( 0.5, 0.5, -0.5, 1.0 ),
+];
+// Riangle prism indices
+function rightAnglePrism() {
+  RightTriangle(0, 1, 2);
+  RightTriangle(2, 0, 3);
+  RightTriangle(2, 5, 3);
+  RightTriangle(1, 2, 5);
+  RightTriangle(1, 4, 5);
+  RightTriangle(3, 4, 5);
+  RightTriangle(4, 3, 0);
+  RightTriangle(4, 1, 0);
+  colors = s5colors;
+  points = s5points;
 };
