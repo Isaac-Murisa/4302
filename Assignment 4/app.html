@@ -28,13 +28,49 @@
         <script type="text/javascript" src="http://interactivecomputergraphics.com/8E/Code/Common/InitShaders.js"></script>
         <script type="text/javascript" src="http://interactivecomputergraphics.com/8E/Code/Common/MVnew.js"></script>
         <script type="text/javascript" src="app.js"></script>
-        
+
     </head>
 
     <body>
         <canvas id="gl-canvas" width="512" height="512">
             Oops ... your browser doesn't support the HTML5 canvas element
         </canvas><br>
+<<<<<<< HEAD
+=======
+        <h5>Interface Menu</h5>
+
+        <label for="show">Select Transformation or Projection View</label>
+        <select name="show" id="view">
+            <option value="rotation">Rotation</option>
+            <option value="translate">Translation</option>
+            <option value="uniformScale">Uniform Scaling</option>
+            <option value="uniformXScale">"Scaling in X-direction"</option>
+            <option value="uniformYScale">Scaling in Y-direction</option>
+            <option value="uniformYScale">Scaling in Z-direction</option>
+            <option value="uniformYScale">Move back and forth</option>
+            <option value="perspective">Perspective View</option>
+        </select><br>
+
+        <button onclick="changeView()">Render</button>
+
+        <h5>Instructions</h5>
+        <p>
+            Since we could not show many objects on the same canvas, we have implemented an interface to select between different transfomations and
+            selecting between Perspective and Orthogonal view.
+            <li>Due to last minute testing errors, we suggest reloading the page before slecting a new option above.</li>
+            <li>Use the "Select Tranfoemation or Projection View" to view the behaivour of the shape with the transformation selected. Once selected, click render to effecr transformation.</li>
+            <li>When Perspective or Orthogonal view is selected, you can use WASD to move the object in the scene.</li>
+            <li>You can also select between different shapes.</li>
+        </p>
+>>>>>>> 4352c2958c2299b95eebd2875b8736b3f102f8ca
+
+        <!--assign 4 code-->
+        <button>Toggle Light Source 1</button>
+        <button>Toggle Light Source 2</button>
+        <div class="slider">
+          Ambient Light:
+          <input type="range" min="0" max="100" value="50" class="slider" id="lightSlider">
+        </div>
 
     </body>
 </html>
