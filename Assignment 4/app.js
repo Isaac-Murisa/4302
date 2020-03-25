@@ -1,9 +1,9 @@
 /**
  * Group #3
- * 
+ *
  * Student Names: Isaac Murisa  201534328
  *                Shamiso Jaravaza 201522448
- * 
+ *
  */
 
 
@@ -88,10 +88,10 @@ var thetaLoc;
  */
 window.onload = function init() {
   var canvas = document.getElementById( "gl-canvas" );
-  gl = canvas.getContext('webgl2'); 
+  gl = canvas.getContext('webgl2');
 
-  if ( !gl ) { 
-    alert( "WebGL isn't available" ); 
+  if ( !gl ) {
+    alert( "WebGL isn't available" );
   }
 
   // populate indices for cube
@@ -102,9 +102,9 @@ window.onload = function init() {
   //rightAnglePrism();
 
 
-  //  Configure WebGL  
+  //  Configure WebGL
   gl.viewport( 0, 0, canvas.width, canvas.height );
-  gl.clearColor( 1.0, 1.0, 1.0, 1.0 ); 
+  gl.clearColor( 1.0, 1.0, 1.0, 1.0 );
 
   aspect = canvas.width/canvas.height;
   // Depth Test
@@ -113,7 +113,8 @@ window.onload = function init() {
 
   //  Load shaders and initialize attribute buffers
   var program = initShaders( gl, "vertex-shader", "fragment-shader" );
-  gl.useProgram( program );     
+
+  gl.useProgram( program );
 
   /**
    * Buffer objects
@@ -127,7 +128,7 @@ window.onload = function init() {
   gl.enableVertexAttribArray(normalLoc);
 
   // ---------------Vertices------------------
-  // Load the data into the GPU        
+  // Load the data into the GPU
   var bufferId = gl.createBuffer();
   gl.bindBuffer( gl.ARRAY_BUFFER, bufferId );
   gl.bufferData( gl.ARRAY_BUFFER, flatten(points), gl.STATIC_DRAW);   //change when vertices
@@ -135,7 +136,7 @@ window.onload = function init() {
   // Associate out shader variables with our data buffer
   var vPosition = gl.getAttribLocation( program, "vPosition" );
   gl.vertexAttribPointer( vPosition, 4, gl.FLOAT, false, 0, 0 );
-  gl.enableVertexAttribArray( vPosition );    
+  gl.enableVertexAttribArray( vPosition );
 
   thetaLoc = gl.getUniformLocation(program, "theta");
 
@@ -164,6 +165,9 @@ window.onload = function init() {
  */
 function render() {
   gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
+  /**
+   * Below are the required transformations
+   */
 
   getModelView();
   gl.uniformMatrix4fv(vModelView, false, flatten(modelViewMatrix));
@@ -267,7 +271,7 @@ function cubeIndices(){
 
 
 /**
- * Tetrahedrone 
+ * Tetrahedrone
  */
 function Tetrahedrone(a, b, c) {
   s2points.push(tetraVertices[a]);
