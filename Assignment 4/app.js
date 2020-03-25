@@ -74,10 +74,10 @@ window.onload = function init() {
   }
 
   // populate indices for cube
-  //cubeIndices();
-  //tetraIndices();
+  cubeIndices();
+  tetraIndices();
   //cuboidIndices();
-  prismIndices();
+  //prismIndices();
   //rightAnglePrism();
 
 
@@ -85,15 +85,13 @@ window.onload = function init() {
   gl.viewport( 0, 0, canvas.width, canvas.height );
   gl.clearColor( 1.0, 1.0, 1.0, 1.0 ); 
 
-  aspect =  canvas.width/canvas.height;
+  aspect = canvas.width/canvas.height;
   // Depth Test
   gl.enable(gl.DEPTH_TEST);
 
-  // programs
 
   //  Load shaders and initialize attribute buffers
   var program = initShaders( gl, "vertex-shader", "fragment-shader" );
-
   gl.useProgram( program );     
 
   /**
@@ -122,10 +120,12 @@ window.onload = function init() {
   gl.vertexAttribPointer( vPosition, 4, gl.FLOAT, false, 0, 0 );
   gl.enableVertexAttribArray( vPosition );    
 
+
   // pass model view matrix to vertex shader
   vModelViewMatrix = gl.getUniformLocation(program, "uModelViewMatrix");
   vProjectionMatrix = gl.getUniformLocation(program, "uProjectionMatrix");
 
+  // render objects
   render();
 };
 
@@ -133,41 +133,16 @@ window.onload = function init() {
  * Render functions
  */
 function render() {
-  gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT ); 
-  /**
-   * Below are the required transformations
-   */
+  gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
 
-  if (model_trans == "perspective") {
-    // perspective projection lookat() function variables
-    eye = vec3(pradius * Math.sin(ptheta)*Math.cos(pphi), pradius * Math.sin(ptheta) * Math.sin(pphi), pradius * Math.cos(ptheta));
-    modelViewMatrix = lookAt(eye, at , up);
-    projectionMatrix = perspective(fovy, aspect, pnear, pfar);
+  var tempMV = getModelView();
+  var tempPM = getProjectionMatrix();
 
-    gl.uniformMatrix4fv(vModelViewMatrix, false, flatten(modelViewMatrix));
-    gl.uniformMatrix4fv(vProjectionMatrix, false, flatten(projectionMatrix));
-    gl.drawArrays( gl.TRIANGLES, 0, points.length );
-    requestAnimationFrame(render);
-  }
-  else if (model_trans == "orthogonal") {
-    // orthogonal projection function lookat() variables
-    eye = vec3(radius * Math.sin(phi), radius * Math.sin(theta), radius*Math.cos(phi));
-    modelViewMatrix = lookAt(eye, at , up);
-    projectionMatrix = ortho(left, right, bottom, top, near, far);
+  gl.uniformMatrix4fv(vModelViewMatrix, false, flatten(tempMV));
+  gl.uniformMatrix4fv(vProjectionMatrix, false, flatten(tempPM));
+  gl.drawArrays( gl.TRIANGLES, 0, pointMatrix[i].length );
 
-    gl.uniformMatrix4fv(vModelViewMatrix, false, flatten(modelViewMatrix));
-    gl.uniformMatrix4fv(vProjectionMatrix, false, flatten(projectionMatrix));
-    gl.drawArrays( gl.TRIANGLES, 0, points.length );
-    requestAnimationFrame(render);
-  }
-
-  // Different transformations: Rotation
-  /** 
-  mv = mult( mv, rotate(2.0,vec3(0,1,0)) );
-  gl.uniformMatrix4fv(vModelViewMatrix, false, flatten(mv));
-  gl.uniformMatrix4fv(vProjectionMatrix, false, flatten(p));
-  gl.drawArrays( gl.TRIANGLES, 0, points.length );
-  requestAnimationFrame(render);*/
+  requestAnimationFrame(render);
   
 };
 
@@ -190,10 +165,18 @@ document.onkeypress = function(event) {
   };
 };
 
+function getModelView() {
+  eye = vec3(pradius * Math.sin(ptheta)*Math.cos(pphi), pradius * Math.sin(ptheta) * Math.sin(pphi), pradius * Math.cos(ptheta));
+  return(lookAt(eye, at , up));
+};
+
+function getProjectionMatrix() {
+  return (perspective(fovy, aspect, pnear, pfar));
+};
+
 
 
 /********   Shapes  ******/
-
 
 
 /**
