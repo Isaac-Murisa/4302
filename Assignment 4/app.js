@@ -11,6 +11,7 @@
 // Shape arrays and vertices
 var gl;
 var points = [];
+var normalsArray = [];
 var colors = [];
 var s2points = [];
 var s2colors = [];
@@ -20,10 +21,6 @@ var s4points = [];
 var s4colors = [];
 var s5points = [];
 var s5colors = [];
-
-
-var vModelViewMatrix, vProjectionMatrix;
-var modelViewMatrix, projectionMatrix;
 
 // orthogonal viewing variables
 var near = -1;
@@ -40,17 +37,16 @@ var ptheta = 0.0;
 var pphi = 0.0;
 var pdr = 5.0 * Math.PI/180.0;
 
-var  fovy = 45.0;  // Field-of-view in Y direction angle (in degrees)
-var  aspect = 1.0;       // Viewport aspect ratio
+// Field-of-view in Y direction angle (in degrees)
+// Viewport aspect ratio
+var  fovy = 45.0;  
+var  aspect = 1.0;       
 
 // orthogonal viewing
 var left = -1.0;
 var right = 1.0;
 var top = 1.0;
 var bottom = -1.0;
-
-var mv = new mat4();
-var p = new mat4();
 
 var eye;
 const at = vec3(0.0, 0.0, 0.0);
@@ -61,6 +57,31 @@ var model_trans = "perspective";
 var num = 0.1;
 var y_point = 1;
 var x_point = 1;
+
+var lightPosition = vec4(1.0, 1.0, 1.0, 0.0);
+var lightAmbient = vec4(0.2, 0.2, 0.2, 1.0);
+var lightDiffuse = vec4(1.0, 1.0, 1.0, 1.0);
+var lightSpecular = vec4(1.0, 1.0, 1.0, 1.0);
+
+var materialAmbient = vec4(1.0, 0.0, 1.0, 1.0);
+var materialDiffuse = vec4(1.0, 0.8, 0.0, 1.0);
+var materialSpecular = vec4(1.0, 0.8, 0.0, 1.0);
+var materialShininess = 100.0;
+
+var ctm;
+var ambientColor, diffuseColor, specularColor;
+var modelViewMatrix, projectionMatrix;
+var vModelView;
+var viewerPos;
+var program;
+
+var xAxis = 0;
+var yAxis = 1;
+var zAxis = 2;
+var axis = 0;
+var theta = vec3(0, 0, 0);
+
+var thetaLoc;
 
 /**
  * Init() function
@@ -75,7 +96,7 @@ window.onload = function init() {
 
   // populate indices for cube
   cubeIndices();
-  tetraIndices();
+  //tetraIndices();
   //cuboidIndices();
   //prismIndices();
   //rightAnglePrism();
@@ -97,17 +118,13 @@ window.onload = function init() {
   /**
    * Buffer objects
    */
-  
-  // ---------------Color Buffer-------------------
-  // load the data into gpu
-  var colorBuffer = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-  gl.bufferData(gl.ARRAY_BUFFER, flatten(colors), gl.STATIC_DRAW);
+  var nBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, nBuffer);
+  gl.bufferData(gl.ARRAY_BUFFER, flatten(normalsArray), gl.STATIC_DRAW);
 
-  // Associate color with buffer data
-  var vColor = gl.getAttribLocation( program, "vColor" );
-  gl.vertexAttribPointer( vColor, 4, gl.FLOAT, false, 0, 0 );
-  gl.enableVertexAttribArray( vColor );
+  var normalLoc = gl.getAttribLocation(program, "aNormal");
+  gl.vertexAttribPointer(normalLoc, 3, gl.FLOAT, false, 0, 0);
+  gl.enableVertexAttribArray(normalLoc);
 
   // ---------------Vertices------------------
   // Load the data into the GPU        
@@ -120,10 +137,23 @@ window.onload = function init() {
   gl.vertexAttribPointer( vPosition, 4, gl.FLOAT, false, 0, 0 );
   gl.enableVertexAttribArray( vPosition );    
 
+  thetaLoc = gl.getUniformLocation(program, "theta");
 
-  // pass model view matrix to vertex shader
-  vModelViewMatrix = gl.getUniformLocation(program, "uModelViewMatrix");
-  vProjectionMatrix = gl.getUniformLocation(program, "uProjectionMatrix");
+  viewerPos = vec3(0.0, 0.0, -20.0);
+
+  var ambientProduct = mult(lightAmbient, materialAmbient);
+  var diffuseProduct = mult(lightDiffuse, materialDiffuse);
+  var specularProduct = mult(lightSpecular, materialSpecular);
+  
+  // Assoiate with vertiex Shader
+  getProjectionMatrix();
+  gl.uniform4fv(gl.getUniformLocation(program, "uAmbientProduct"), ambientProduct);
+  gl.uniform4fv(gl.getUniformLocation(program, "uDiffuseProduct"), diffuseProduct );
+  gl.uniform4fv(gl.getUniformLocation(program, "uSpecularProduct"), specularProduct );
+  gl.uniform4fv(gl.getUniformLocation(program, "uLightPosition"), lightPosition );
+  gl.uniform1f(gl.getUniformLocation(program, "uShininess"), materialShininess);
+  gl.uniformMatrix4fv(gl.getUniformLocation(program, "uProjectionMatrix") , false, flatten(projectionMatrix));
+  vModelView = gl.getUniformLocation(program, "uModelViewMatrix");
 
   // render objects
   render();
@@ -135,12 +165,9 @@ window.onload = function init() {
 function render() {
   gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
 
-  var tempMV = getModelView();
-  var tempPM = getProjectionMatrix();
-
-  gl.uniformMatrix4fv(vModelViewMatrix, false, flatten(tempMV));
-  gl.uniformMatrix4fv(vProjectionMatrix, false, flatten(tempPM));
-  gl.drawArrays( gl.TRIANGLES, 0, pointMatrix[i].length );
+  getModelView();
+  gl.uniformMatrix4fv(vModelView, false, flatten(modelViewMatrix));
+  gl.drawArrays( gl.TRIANGLES, 0, points.length );
 
   requestAnimationFrame(render);
   
@@ -166,12 +193,16 @@ document.onkeypress = function(event) {
 };
 
 function getModelView() {
-  eye = vec3(pradius * Math.sin(ptheta)*Math.cos(pphi), pradius * Math.sin(ptheta) * Math.sin(pphi), pradius * Math.cos(ptheta));
-  return(lookAt(eye, at , up));
+  modelViewMatrix = mat4();
+  modelViewMatrix = mult(modelViewMatrix, rotate(theta[xAxis], vec3(1, 0, 0)));
+  modelViewMatrix = mult(modelViewMatrix, rotate(theta[yAxis], vec3(0, 1, 0)));
+  modelViewMatrix = mult(modelViewMatrix, rotate(theta[zAxis], vec3(0, 0, 1)));
+  //eye = vec3(pradius * Math.sin(ptheta)*Math.cos(pphi), pradius * Math.sin(ptheta) * Math.sin(pphi), pradius * Math.cos(ptheta));
+  //return(lookAt(eye, at , up));
 };
 
 function getProjectionMatrix() {
-  return (perspective(fovy, aspect, pnear, pfar));
+  projectionMatrix = ortho(-1, 1, -1, 1, -100, 100);
 };
 
 
@@ -183,18 +214,24 @@ function getProjectionMatrix() {
  * Cube function
  */
 function Cube(a, b, c, d) {
+
+  var t1 = subtract(vertices[b], vertices[a]);
+  var t2 = subtract(vertices[c], vertices[b]);
+  var normal = cross(t1, t2);
+  normal = vec3(normal);
+  
   points.push(vertices[a]);
-  colors.push(faceColors[a]);
+  normalsArray.push(normal);
   points.push(vertices[b]);
-  colors.push(faceColors[a]);
+  normalsArray.push(normal);
   points.push(vertices[c]);
-  colors.push(faceColors[a]);
+  normalsArray.push(normal);
   points.push(vertices[a]);
-  colors.push(faceColors[a]);
+  normalsArray.push(normal);
   points.push(vertices[c]);
-  colors.push(faceColors[a]);
+  normalsArray.push(normal);
   points.push(vertices[d]);
-  colors.push(faceColors[a]);
+  normalsArray.push(normal);
 };
 // cube vertices
 const vertices = [
