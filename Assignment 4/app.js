@@ -22,6 +22,8 @@ var s4colors = [];
 var s5points = [];
 var s5colors = [];
 
+var index = 0;
+
 // orthogonal viewing variables
 var near = -1;
 var far = 1;
@@ -39,14 +41,24 @@ var pdr = 5.0 * Math.PI/180.0;
 
 // Field-of-view in Y direction angle (in degrees)
 // Viewport aspect ratio
-var  fovy = 45.0;  
-var  aspect = 1.0;       
+var  fovy = 45.0;
+var  aspect = 1.0;
 
 // orthogonal viewing
 var left = -1.0;
 var right = 1.0;
 var top = 1.0;
 var bottom = -1.0;
+
+//fs and ss vec4
+var va = vec4(0.0, 0.0, -1.0,1);
+var vb = vec4(0.0, 0.942809, 0.333333, 1);
+var vc = vec4(-0.816497, -0.471405, 0.333333, 1);
+var vd = vec4(0.816497, -0.471405, 0.333333,1);
+var modelViewMatrixLoc, projectionMatrixLoc;
+var nMatrix, nMatrixLoc;
+
+
 
 var eye;
 const at = vec3(0.0, 0.0, 0.0);
@@ -95,11 +107,13 @@ window.onload = function init() {
   }
 
   // populate indices for cube
-  cubeIndices();
+  //cubeIndices();
   //tetraIndices();
   //cuboidIndices();
   //prismIndices();
   //rightAnglePrism();
+
+  tetrahedron(va, vb, vc, vd, 5);
 
 
   //  Configure WebGL
@@ -115,6 +129,15 @@ window.onload = function init() {
   var program = initShaders( gl, "vertex-shader", "fragment-shader" );
 
   gl.useProgram( program );
+
+//TEST
+    modelViewMatrixLoc = gl.getUniformLocation(program, "uModelViewMatrix");
+    projectionMatrixLoc = gl.getUniformLocation(program, "uProjectionMatrix");
+    nMatrixLoc = gl.getUniformLocation(program, "uNormalMatrix");
+
+//end test
+
+
 
   /**
    * Buffer objects
@@ -145,7 +168,7 @@ window.onload = function init() {
   var ambientProduct = mult(lightAmbient, materialAmbient);
   var diffuseProduct = mult(lightDiffuse, materialDiffuse);
   var specularProduct = mult(lightSpecular, materialSpecular);
-  
+
   // Assoiate with vertiex Shader
   getProjectionMatrix();
   gl.uniform4fv(gl.getUniformLocation(program, "uAmbientProduct"), ambientProduct);
@@ -172,9 +195,11 @@ function render() {
   getModelView();
   gl.uniformMatrix4fv(vModelView, false, flatten(modelViewMatrix));
   gl.drawArrays( gl.TRIANGLES, 0, points.length );
+//Test
 
+//ENDTEST
   requestAnimationFrame(render);
-  
+
 };
 
 
@@ -195,6 +220,61 @@ document.onkeypress = function(event) {
     ptheta++;
   };
 };
+
+//TEST
+function triangle(a, b, c) {
+
+     var t1 = subtract(b, a);
+     var t2 = subtract(c, a);
+     var normal = normalize(cross(t2, t1));
+
+     normalsArray.push(vec4(normal[0], normal[1], normal[2], 0.0));
+     normalsArray.push(vec4(normal[0], normal[1], normal[2], 0.0));
+     normalsArray.push(vec4(normal[0], normal[1], normal[2], 0.0));
+
+     points.push(a);
+     points.push(b);
+    points.push(c);
+
+     index += 3;
+
+}
+
+
+function divideTriangle(a, b, c, count) {
+    if (count > 0) {
+
+        var ab = mix( a, b, 0.5);
+        var ac = mix( a, c, 0.5);
+        var bc = mix( b, c, 0.5);
+
+        ab = normalize(ab, true);
+        ac = normalize(ac, true);
+        bc = normalize(bc, true);
+
+        divideTriangle(a, ab, ac, count - 1);
+        divideTriangle(ab, b, bc, count - 1);
+        divideTriangle(bc, c, ac, count - 1);
+        divideTriangle(ab, bc, ac, count - 1);
+    }
+    else {
+        triangle(a, b, c);
+    }
+}
+
+function tetrahedron(a, b, c, d, n) {
+    cubeIndices();
+    divideTriangle(a, b, c, n);
+    divideTriangle(d, c, b, n);
+    divideTriangle(a, d, b, n);
+    divideTriangle(a, c, d, n);
+
+}
+
+//END TEST
+
+
+
 
 function getModelView() {
   modelViewMatrix = mat4();
@@ -223,7 +303,7 @@ function Cube(a, b, c, d) {
   var t2 = subtract(vertices[c], vertices[b]);
   var normal = cross(t1, t2);
   normal = vec3(normal);
-  
+
   points.push(vertices[a]);
   normalsArray.push(normal);
   points.push(vertices[b]);
