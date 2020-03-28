@@ -113,7 +113,7 @@ window.onload = function init() {
   //prismIndices();
   //rightAnglePrism();
 
-  tetrahedron(va, vb, vc, vd, 5);
+  tetrahedron(va, vb, vc, vd, 4);
 
 
   //  Configure WebGL
