@@ -26,7 +26,7 @@ var normalsArray = [];
 
 //SWITCH SHADING
 var flat = true;
-//CHANGE LIGHTING
+//DISABLE LIGHTING
 
 
 
@@ -47,7 +47,7 @@ var vb = vec4(0.0, 0.942809, 0.333333, 1);
 var vc = vec4(-0.816497, -0.471405, 0.333333, 1);
 var vd = vec4(0.816497, -0.471405, 0.333333,1);
 
-var lightPosition = vec4(1.0, 1.0, 1.0, 0.0);
+var lightPosition = vec4(0.0, 0.0, 1.0, 0.0);
 var lightAmbient = vec4(0.2, 0.2, 0.2, 1.0);
 var lightDiffuse = vec4(1.0, 1.0, 1.0, 1.0);
 var lightSpecular = vec4(1.0, 1.0, 1.0, 1.0);
@@ -224,16 +224,19 @@ window.onload = function init() {
             case 84:
                 lightAmbient = vec4(0.2, 0.2, 0.2, 1.0);
                 lightDiffuse = vec4(1.0, 1.0, 1.0, 1.0);
+                lightPosition = vec4(0.0, 0.0, 1.0, 0.0);
                 init();
                 break;
             case 76:
                 lightAmbient = vec4(0.0, 1.0, 5.0, 1.0);
                 lightDiffuse = vec4(1.0, 0.4, 0.0, 1.0);
+                lightPosition = vec4(1.0, 0.0, 0.0, 0.0);
                 init();
                 break;
             case 82:
                 lightAmbient = vec4(0.4, 0.1, 0.2, 1.0);
                 lightDiffuse = vec4(1.0, 0.0, 0.0, 1.0);
+                lightPosition = vec4(-1.0, 0.0, 0.0, 0.0);
                 init();
                 break;
 
