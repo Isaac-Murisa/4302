@@ -48,6 +48,7 @@ var vb = vec4(0.0, 0.942809, 0.333333, 1);
 var vc = vec4(-0.816497, -0.471405, 0.333333, 1);
 var vd = vec4(0.816497, -0.471405, 0.333333,1);
 
+//default Light source
 var lightPosition = vec4(0.0, 0.0, 1.0, 0.0);
 var lightAmbient = vec4(0.2, 0.2, 0.2, 1.0);
 var lightDiffuse = vec4(1.0, 1.0, 1.0, 1.0);
@@ -203,6 +204,20 @@ window.onload = function init() {
         init();
     };
 
+        var slider = document.getElementById("lightSlider");
+        var output = document.getElementById("value");
+
+        output.innerHTML = slider.value; // Display the default slider value
+
+        // Update the current slider value (each time you drag the slider handle)
+        slider.oninput = function() {
+        output.innerHTML = this.value;
+        var sv = output.innerHTML;
+        var sliderVal = sv/100;
+        lightAmbient = vec4(sv, 0.0, 0.0, 1.0);
+        init();
+        }
+
     //SWITCH SHADING TYPE
     document.onkeydown = function (e) {
         switch (e.which) {
@@ -236,14 +251,14 @@ window.onload = function init() {
                   init();
                 }
                 break;
-            case 76:
+            case 76: //left
               if (leftLightON==false){
                 lightPosition = vec4(0.0, 0.0, 0.0, 0.0);
                 leftLightON=true;
                 init();
               }
               else {
-                lightAmbient = vec4(0.0, 1.0, 5.0, 1.0);
+               lightAmbient = vec4(0.0, 1.0, 5.0, 1.0);
                 lightDiffuse = vec4(1.0, 0.4, 0.0, 1.0);
                 lightPosition = vec4(1.0, 0.0, 0.0, 0.0);
                 leftLightON = false;
@@ -271,7 +286,7 @@ window.onload = function init() {
 
 
 
-
+//default
     gl.uniform4fv( gl.getUniformLocation(program,
        "uAmbientProduct"), ambientProduct );
     gl.uniform4fv( gl.getUniformLocation(program,
@@ -284,6 +299,7 @@ window.onload = function init() {
        "uShininess"),materialShininess );
 
     render();
+
 }
 
 
