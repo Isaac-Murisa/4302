@@ -94,7 +94,7 @@ var axis = 0;
 //var theta = vec3(0, 0, 0);
 
 var sourceLight = 0;
-var flat = true;
+var flat = false;
 
 var thetaLoc;
 
