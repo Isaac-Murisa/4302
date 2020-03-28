@@ -27,8 +27,9 @@ var normalsArray = [];
 //SWITCH SHADING
 var flat = true;
 //DISABLE LIGHTING
-
-
+var lightON = true;
+var leftLightON = true;
+var rightLightON = true;
 
 var near = -10;
 var far = 10;
@@ -222,22 +223,46 @@ window.onload = function init() {
     //SWITCH LIGHTING ON OR OFF
     //change LIGHT POSITION AND COLOR
             case 84:
-                lightAmbient = vec4(0.2, 0.2, 0.2, 1.0);
-                lightDiffuse = vec4(1.0, 1.0, 1.0, 1.0);
-                lightPosition = vec4(0.0, 0.0, 1.0, 0.0);
+              if (lightON==false){
+                lightPosition = vec4(0.0, 0.0, 0.0, 0.0);
+                lightON=true;
                 init();
+              }
+              else {
+                  lightAmbient = vec4(0.2, 0.2, 0.2, 1.0);
+                  lightDiffuse = vec4(1.0, 1.0, 1.0, 1.0);
+                  lightPosition = vec4(0.0, 0.0, 1.0, 0.0);
+                  lightON=false;
+                  init();
+                }
                 break;
             case 76:
+              if (leftLightON==false){
+                lightPosition = vec4(0.0, 0.0, 0.0, 0.0);
+                leftLightON=true;
+                init();
+              }
+              else {
                 lightAmbient = vec4(0.0, 1.0, 5.0, 1.0);
                 lightDiffuse = vec4(1.0, 0.4, 0.0, 1.0);
                 lightPosition = vec4(1.0, 0.0, 0.0, 0.0);
+                leftLightON = false;
                 init();
+              }
                 break;
             case 82:
+              if (rightLightON==false){
+                lightPosition = vec4(0.0, 0.0, 0.0, 0.0);
+                rightLightON=true;
+                init();
+              }
+              else {
                 lightAmbient = vec4(0.4, 0.1, 0.2, 1.0);
                 lightDiffuse = vec4(1.0, 0.0, 0.0, 1.0);
                 lightPosition = vec4(-1.0, 0.0, 0.0, 0.0);
+                rightLightON = false;
                 init();
+              }
                 break;
 
 
