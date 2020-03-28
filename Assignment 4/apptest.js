@@ -10,6 +10,9 @@
 // variables for system
 // Shape arrays and vertices
 
+
+// http://www.cs.uregina.ca/Links/class-info/315/WebGL2/Lab6/#Lighting
+
 var shadedSphere3 = function() {
 var canvas;
 var gl;
@@ -23,6 +26,8 @@ var normalsArray = [];
 
 //SWITCH SHADING
 var flat = true;
+//CHANGE LIGHTING
+
 
 
 var near = -10;
@@ -214,8 +219,29 @@ window.onload = function init() {
                 flat = true;
                 init();
                 break;
+    //SWITCH LIGHTING ON OR OFF
+    //change LIGHT POSITION AND COLOR
+            case 84:
+                lightAmbient = vec4(0.2, 0.2, 0.2, 1.0);
+                lightDiffuse = vec4(1.0, 1.0, 1.0, 1.0);
+                init();
+                break;
+            case 76:
+                lightAmbient = vec4(0.0, 1.0, 5.0, 1.0);
+                lightDiffuse = vec4(1.0, 0.4, 0.0, 1.0);
+                init();
+                break;
+            case 82:
+                lightAmbient = vec4(0.4, 0.1, 0.2, 1.0);
+                lightDiffuse = vec4(1.0, 0.0, 0.0, 1.0);
+                init();
+                break;
+
+
         }
     };
+
+
 
 
     gl.uniform4fv( gl.getUniformLocation(program,
@@ -241,6 +267,9 @@ function render() {
         radius*Math.sin(theta)*Math.sin(phi), radius*Math.cos(theta));
 
     modelViewMatrix = lookAt(eye, at , up);
+
+
+
     projectionMatrix = ortho(left, right, bottom, top, near, far);
 
     nMatrix = normalMatrix(modelViewMatrix, true);
