@@ -91,7 +91,10 @@ var xAxis = 0;
 var yAxis = 1;
 var zAxis = 2;
 var axis = 0;
-var theta = vec3(0, 0, 0);
+//var theta = vec3(0, 0, 0);
+
+var sourceLight = 0;
+var flat = true;
 
 var thetaLoc;
 
@@ -107,13 +110,13 @@ window.onload = function init() {
   }
 
   // populate indices for cube
-  //cubeIndices();
+  cubeIndices();
   //tetraIndices();
   //cuboidIndices();
   //prismIndices();
   //rightAnglePrism();
 
-  tetrahedron(va, vb, vc, vd, 4);
+  //tetrahedron(va, vb, vc, vd, 4);
 
 
   //  Configure WebGL
@@ -131,10 +134,11 @@ window.onload = function init() {
   gl.useProgram( program );
 
 //TEST
+/** 
     modelViewMatrixLoc = gl.getUniformLocation(program, "uModelViewMatrix");
     projectionMatrixLoc = gl.getUniformLocation(program, "uProjectionMatrix");
     nMatrixLoc = gl.getUniformLocation(program, "uNormalMatrix");
-
+*/
 //end test
 
 
@@ -274,19 +278,18 @@ function tetrahedron(a, b, c, d, n) {
 //END TEST
 
 
-
-
+var rotationvariable = 2.0;
 function getModelView() {
   modelViewMatrix = mat4();
-  modelViewMatrix = mult(modelViewMatrix, rotate(theta[xAxis], vec3(1, 0, 0)));
-  modelViewMatrix = mult(modelViewMatrix, rotate(theta[yAxis], vec3(0, 1, 0)));
-  modelViewMatrix = mult(modelViewMatrix, rotate(theta[zAxis], vec3(0, 0, 1)));
+  modelViewMatrix = mult(modelViewMatrix, rotate(rotationvariable, vec3(1, 0, 0)));
+  rotationvariable += 2;
   //eye = vec3(pradius * Math.sin(ptheta)*Math.cos(pphi), pradius * Math.sin(ptheta) * Math.sin(pphi), pradius * Math.cos(ptheta));
   //return(lookAt(eye, at , up));
 };
 
 function getProjectionMatrix() {
   projectionMatrix = ortho(-1, 1, -1, 1, -100, 100);
+  //projectionMatrix = perspective(fovy, aspect, far, near);
 };
 
 
@@ -298,24 +301,39 @@ function getProjectionMatrix() {
  * Cube function
  */
 function Cube(a, b, c, d) {
+  if (flat){
+    var t1 = subtract(vertices[b], vertices[a]);
+    var t2 = subtract(vertices[c], vertices[b]);
+    var normal = cross(t1, t2);
+    normal = vec3(normal);
 
-  var t1 = subtract(vertices[b], vertices[a]);
-  var t2 = subtract(vertices[c], vertices[b]);
-  var normal = cross(t1, t2);
-  normal = vec3(normal);
-
-  points.push(vertices[a]);
-  normalsArray.push(normal);
-  points.push(vertices[b]);
-  normalsArray.push(normal);
-  points.push(vertices[c]);
-  normalsArray.push(normal);
-  points.push(vertices[a]);
-  normalsArray.push(normal);
-  points.push(vertices[c]);
-  normalsArray.push(normal);
-  points.push(vertices[d]);
-  normalsArray.push(normal);
+    points.push(vertices[a]);
+    normalsArray.push(normal);
+    points.push(vertices[b]);
+    normalsArray.push(normal);
+    points.push(vertices[c]);
+    normalsArray.push(normal);
+    points.push(vertices[a]);
+    normalsArray.push(normal);
+    points.push(vertices[c]);
+    normalsArray.push(normal);
+    points.push(vertices[d]);
+    normalsArray.push(normal);
+  }
+  else {
+    points.push(vertices[a]);
+    normalsArray.push(vertices[a]);
+    points.push(vertices[b]);
+    normalsArray.push(vertices[b]);
+    points.push(vertices[c]);
+    normalsArray.push(vertices[c]);
+    points.push(vertices[a]);
+    normalsArray.push(vertices[a]);
+    points.push(vertices[c]);
+    normalsArray.push(vertices[c]);
+    points.push(vertices[d]);
+    normalsArray.push(vertices[d]);
+  }
 };
 // cube vertices
 const vertices = [
