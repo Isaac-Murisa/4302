@@ -5,10 +5,31 @@
  *                Shamiso Jaravaza 201522448
  *
  */
-
-
-// variables for system
-// Shape arrays and vertices
+/**
+ * ASSIGNMENT DOCUMENTATION
+ * 
+ * 1. We have successfuly set the surface normals for the object being showed on the screen. From assignment 3, we could not place all objects
+ *    in the same canvas simultaneously, therefore, we have set buttons to toggle between the shapes.
+ * 2. We have successfuly set the material properties for the object being showed on the screen. 
+ * 3. We have set the following buttons to turn on/off light source, each light source has a different color:
+ *    "T" - pressing "T" shows the light source from the viewers camera angle. 
+ *    "R" - pressing "R" shows the light source coming from the right. Pressing the button twice will switch it off.
+ *    "L" - pressing "L" shows the light source coming from the left. Pressing the button twice will switch it off.
+ *    Sometimes, the light source will switch off if you press the button for another light direction/source. Simply press the button again
+ *    to switch it back on.
+ * 4. We have developed a slider to help select the ambient light value, the default 50%.
+ * 5. 
+ * 6. We have set a light source whichis attached to the viewers camera. As mentioned above, it can be toggled by pressing the Key "T".
+ * 7. we have set buttons and the following keys for controlling interface:
+ *    "F" - Switches to flat shading of object
+ *    "S" - Switcehs to smooth shading if object
+ *    "T" - pressing "T" shows the light source from the viewers camera angle. 
+ *    "R" - pressing "R" shows the light source coming from the right. Pressing the button twice will switch it off.
+ *    "L" - pressing "L" shows the light source coming from the left. Pressing the button twice will switch it off.
+ * 8. 
+ * 9. Our interface consists of the light on/off toggle mentioned above, as well as WASD keys to move around the object
+ * 
+ */
 
 
 // http://www.cs.uregina.ca/Links/class-info/315/WebGL2/Lab6/#Lighting
@@ -16,20 +37,8 @@
 var shadedSphere3 = function() {
 var canvas;
 var gl;
-var points = [];
-var normalsArray = [];
-var colors = [];
-var s2points = [];
-var s2colors = [];
-var s3points = [];
-var s3colors = [];
-var s4points = [];
-var s4colors = [];
-var s5points = [];
-var s5colors = [];
 
 var numTimesToSubdivide = 4;
-
 var index = 0;
 
 var positionsArray = [];
@@ -61,7 +70,7 @@ var vd = vec4(0.816497, -0.471405, 0.333333,1);
 
 //default Light source
 var lightPosition = vec4(0.0, 0.0, 1.0, 0.0);
-var lightAmbient = vec4(0.2, 0.2, 0.2, 1.0);
+var lightAmbient = vec4(0.5, 0.5, 0.5, 1.0);
 var lightDiffuse = vec4(1.0, 1.0, 1.0, 1.0);
 var lightSpecular = vec4(1.0, 1.0, 1.0, 1.0);
 
@@ -170,8 +179,8 @@ window.onload = function init() {
     var diffuseProduct = mult(lightDiffuse, materialDiffuse);
     var specularProduct = mult(lightSpecular, materialSpecular);
 
-
-    tetrahedron(va, vb, vc, vd, numTimesToSubdivide);
+    if (shape == "circle") tetrahedron(va, vb, vc, vd, numTimesToSubdivide);
+    else cubeIndices();
 
     var nBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, nBuffer);
@@ -194,46 +203,21 @@ window.onload = function init() {
     projectionMatrixLoc = gl.getUniformLocation(program, "uProjectionMatrix");
     nMatrixLoc = gl.getUniformLocation(program, "uNormalMatrix");
 
-    document.getElementById("Button0").onclick = function(){radius *= 2.0;};
-    document.getElementById("Button1").onclick = function(){radius *= 0.5;};
-    document.getElementById("Button2").onclick = function(){theta += dr;};
-    document.getElementById("Button3").onclick = function(){theta -= dr;};
-    document.getElementById("Button4").onclick = function(){phi += dr;};
-    document.getElementById("Button5").onclick = function(){phi -= dr;};
-
     document.getElementById("Button6").onclick = function(){
-        numTimesToSubdivide++;
+        numTimesToSubdivide = 0;
         index = 0;
         positionsArray = [];
         normalsArray = [];
         init();
     };
     document.getElementById("Button7").onclick = function(){
-        if(numTimesToSubdivide) numTimesToSubdivide--;
+        numTimesToSubdivide = 4;
         index = 0;
         positionsArray = [];
         normalsArray = [];
         init();
     };
 
-    /**
-     * Event handlers for key press and rotation
-     
-    document.onkeypress = function(event) {
-      if (event.code=='KeyW') {  //W key
-        phi += dr;
-      };
-      if (event.code=='KeyS') {  //s key
-        phi -= dr;
-      };
-      if (event.code=='KeyA') {  //a key
-        theta -= dr;
-      };
-      if (event.code=='KeyD') {  //D key
-        theta += dr;
-      };
-    };
-    */
 
     var slider = document.getElementById("lightSlider");
     var output = document.getElementById("value");
@@ -245,7 +229,7 @@ window.onload = function init() {
       output.innerHTML = this.value;
       var sv = output.innerHTML;
       var sliderVal = sv/100;
-      lightAmbient = vec4(sv, 0.0, 0.0, 1.0);
+      lightAmbient = vec4(sliderVal, sliderVal, sliderVal, 1.0);
       init();
     }
 
@@ -357,31 +341,31 @@ function Cube(a, b, c, d) {
     var normal = cross(t1, t2);
     normal = vec3(normal);
 
-    points.push(vertices[a]);
+    positionsArray.push(vertices[a]);
     normalsArray.push(normal);
-    points.push(vertices[b]);
+    positionsArray.push(vertices[b]);
     normalsArray.push(normal);
-    points.push(vertices[c]);
+    positionsArray.push(vertices[c]);
     normalsArray.push(normal);
-    points.push(vertices[a]);
+    positionsArray.push(vertices[a]);
     normalsArray.push(normal);
-    points.push(vertices[c]);
+    positionsArray.push(vertices[c]);
     normalsArray.push(normal);
-    points.push(vertices[d]);
+    positionsArray.push(vertices[d]);
     normalsArray.push(normal);
   }
   else {
-    points.push(vertices[a]);
+    positionsArray.push(vertices[a]);
     normalsArray.push(vertices[a]);
-    points.push(vertices[b]);
+    positionsArray.push(vertices[b]);
     normalsArray.push(vertices[b]);
-    points.push(vertices[c]);
+    positionsArray.push(vertices[c]);
     normalsArray.push(vertices[c]);
-    points.push(vertices[a]);
+    positionsArray.push(vertices[a]);
     normalsArray.push(vertices[a]);
-    points.push(vertices[c]);
+    positionsArray.push(vertices[c]);
     normalsArray.push(vertices[c]);
-    points.push(vertices[d]);
+    positionsArray.push(vertices[d]);
     normalsArray.push(vertices[d]);
   }
 };
@@ -415,147 +399,6 @@ function cubeIndices(){
   Cube(6,5,1,2);
   Cube(4,5,6,7);
   Cube(5,4,0,1);
-};
-
-
-/**
- * Tetrahedrone
- */
-function Tetrahedrone(a, b, c) {
-  s2points.push(tetraVertices[a]);
-  s2colors.push(faceColors[a]);
-  s2points.push(tetraVertices[b]);
-  s2colors.push(faceColors[a]);
-  s2points.push(tetraVertices[c]);
-  s2colors.push(faceColors[a]);
-};
-// prism vertices
-const tetraVertices = [
-  vec4(0, 0.5, 0, 1.0),
-  vec4(-0.5, -0.5, 0.5, 1.0),
-  vec4(0.5, -0.5, 0.5, 1.0),
-  vec4(-0.5, -0.5, -0.5, 1.0),
-  vec4(0.5, -0.5, -0.5, 1.0)
-];
-// prism indices
-function tetraIndices() {
-  Tetrahedrone(0, 1, 2);
-  Tetrahedrone(1, 3, 0);
-  Tetrahedrone(2, 4, 0);
-  Tetrahedrone(3, 0, 4);
-  Tetrahedrone(4, 3, 1);
-  Tetrahedrone(4, 2, 1);
-  colors = s2colors;
-  points = s2points;
-};
-
-
-/**
- * Cuboid
- */
-function Cuboid(a, b, c, d) {
-  s3points.push(cuboidVertices[a]);
-  s3colors.push(faceColors[a]);
-  s3points.push(cuboidVertices[b]);
-  s3colors.push(faceColors[a]);
-  s3points.push(cuboidVertices[c]);
-  s3colors.push(faceColors[a]);
-  s3points.push(cuboidVertices[a]);
-  s3colors.push(faceColors[a]);
-  s3points.push(cuboidVertices[c]);
-  s3colors.push(faceColors[a]);
-  s3points.push(cuboidVertices[d]);
-  s3colors.push(faceColors[a]);
-};
-// cuboid vertices
-const cuboidVertices = [
-  vec4( -0.5, -0.25, 0.5, 1.0 ),
-  vec4( -0.5, 0.25, 0.5, 1.0 ),
-  vec4( 0.5, 0.25, 0.5, 1.0 ),
-  vec4( 0.5, -0.25, 0.5, 1.0 ),
-  vec4( -0.5, -0.25, -0.5, 1.0 ),
-  vec4( -0.5, 0.25, -0.5, 1.0 ),
-  vec4( 0.5, 0.25, -0.5, 1.0 ),
-  vec4( 0.5, -0.25, -0.5, 1.0 )
-];
-// cuboid indices
-function cuboidIndices(){
-  Cuboid(1,0,3,2);
-  Cuboid(2,3,7,6);
-  Cuboid(3,0,4,7);
-  Cuboid(6,5,1,2);
-  Cuboid(4,5,6,7);
-  Cuboid(5,4,0,1);
-  colors = s3colors;
-  points = s3points;
-};
-
-/**
- * Prism as shape 4
- */
-function Prism(a, b, c){
-  s4points.push(prismVertices[a]);
-  s4colors.push(faceColors[a]);
-  s4points.push(prismVertices[b]);
-  s4colors.push(faceColors[a]);
-  s4points.push(prismVertices[c]);
-  s4colors.push(faceColors[a]);
-};
-// Prism vertices
-const prismVertices = [
-  vec4( 0, 0.5, 0.5, 1.0 ),
-  vec4( -0.5, -0.5, 0.5, 1.0 ),
-  vec4( 0.5, -0.5, 0.5, 1.0 ),
-  vec4( 0, 0.5, -0.5, 1.0 ),
-  vec4( -0.5, -0.5, -0.5, 1.0 ),
-  vec4( 0.5, -0.5, -0.5, 1.0 )
-];
-// prism indices
-function prismIndices(){
-  Prism(0, 1, 2);
-  Prism(1, 4, 3);
-  Prism(1, 3, 0);
-  Prism(2, 0, 3);
-  Prism(2, 5, 3);
-  Prism(3, 4, 5);
-  Prism(4, 5, 2);
-  Prism(4, 1, 2);
-  colors = s4colors;
-  points = s4points;
-};
-
-/**
- * Right angle prism
- */
-function RightTriangle(a, b, c){
-  s5points.push(rightPrismVertices[a]);
-  s5colors.push(faceColors[a]);
-  s5points.push(rightPrismVertices[b]);
-  s5colors.push(faceColors[a]);
-  s5points.push(rightPrismVertices[c]);
-  s5colors.push(faceColors[a]);
-};
-// Right angle prism
-const rightPrismVertices =  [
-  vec4( -0.5, -0.5, 0.5, 1.0 ),
-  vec4( 0.5, -0.5, 0.5, 1.0 ),
-  vec4( 0.5, 0.5, 0.5, 1.0 ),
-  vec4( -0.5, -0.5, -0.5, 1.0 ),
-  vec4( 0.5, -0.5, -0.5, 1.0 ),
-  vec4( 0.5, 0.5, -0.5, 1.0 ),
-];
-// Riangle prism indices
-function rightAnglePrism() {
-  RightTriangle(0, 1, 2);
-  RightTriangle(2, 0, 3);
-  RightTriangle(2, 5, 3);
-  RightTriangle(1, 2, 5);
-  RightTriangle(1, 4, 5);
-  RightTriangle(3, 4, 5);
-  RightTriangle(4, 3, 0);
-  RightTriangle(4, 1, 0);
-  colors = s5colors;
-  points = s5points;
 };
 
 
