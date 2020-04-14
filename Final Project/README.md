@@ -2,13 +2,13 @@
 
 ### Group Members
 - Shamiso  Jaravaza 201522448
-- Isaac Murisa 201934328
+- Isaac Murisa 201534328
 
 ##  Description of Project
 
 For our CS 4302 Graphics project, we wanted to implement a Space environment where the user can walk-through observing different planets. However, due to time we could not implement the full features of the project. 
 
-We have designed the project to resamble the planet 'earth' in space rotating at a fixed position. We have also included a 'Sun' feature which is a light source on the planet. Through the light source we can show the effect of day and night on the planet. We have defined a few navigation functions to be able to change the sun position. We have also included a skybox representing the space environment with stars and moon. This will give a background effect which allows us to pan around. 
+We have designed the project to ressemble the planet 'Earth' in space rotating at a fixed position. We have also included a 'Sun' feature which is a light source on the planet. Through the light source we can show the effect of day and night on the planet. We have defined a few navigation functions to be able to change the sun position. We have also included a skybox representing the space environment with stars and moon. This will give a background effect which allows us to pan around. 
 
 The both the skybox and earth textures or images where sourced from a link which we have included in the project sources.
 
@@ -19,7 +19,14 @@ To run the program, open the `index.html` file with a browser. After opening the
 - `Keyboard key T` - pressing this key allows the program to change the position of the sun to the center or eye view.
 
 ## Diclaimer on Sources
-The project is split into two parts, the first part is to apply texture to the sphere to resamble the earth. The second part is to apply texture to the skybox. For the first part we referenced the course code base provided in our class notes and for the second part on how to work with skybox we referenced class notes and from a repository. 
+The project is split into two parts, the first part is to apply texture to the sphere to ressemble the earth. The second part is to apply texture to the skybox. For the first part we referenced the course code base provided in our class notes and for the second part on how to work with skybox we referenced class notes and from a repository. We used the skybox sample code and added our own image which we found on an opensource game image website.
 
 links:
 - http://interactivecomputergraphics.com/8E/Code/07
+- http://math.hws.edu/eck/cs424/notes2013/webgl/skybox-and-reflection/
+- https://opengameart.org/node/21362
+
+## Ways of Interaction
+To move around in the skybox, simply rotating the mouse will change the direction the camera is facing.
+To implement light over the Earth Use 'L' to switch the sun to the Right and 'T' to switch the sun to the center.
+
