@@ -33,6 +33,9 @@ To move around in the skybox, simply rotating the mouse will change the directio
 To implement light over the Earth Use 'L' to switch the sun to the Right and 'T' to switch the sun to the center.
 
 ## Sample Images
-![](https://github.com/Isaac-Murisa/4302/blob/master/Final%20Project/Screenshot%20(55).png)
-![](https://github.com/Isaac-Murisa/4302/blob/master/Final%20Project/Screenshot%20(56).png)
-![](https://github.com/Isaac-Murisa/4302/blob/master/Final%20Project/Screenshot%20(57).png)
+LINKS:
+https://github.com/Isaac-Murisa/4302/blob/master/Final%20Project/Screenshot%20(55).png
+https://github.com/Isaac-Murisa/4302/blob/master/Final%20Project/Screenshot%20(56).png
+https://github.com/Isaac-Murisa/4302/blob/master/Final%20Project/Screenshot%20(57).png
+
+OR the screen shots attach to this file directory. 
